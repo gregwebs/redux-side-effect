@@ -6,14 +6,10 @@ describe('side effect middleware', () => {
   var mutated = 0
   const effect = function(){ mutated++ }
   const doGetState = () => {}
-  var listener = null
   var eff = mkSideEffect()
   const nextHandler = eff.sideEffectMiddleware(
       { dispatch: doDispatch
       , getState: doGetState
-      , subscribe: function(f){
-          listener = f;
-        }
       });
 
   it('must return a function to handle next', () => {
@@ -38,24 +34,12 @@ describe('side effect middleware', () => {
 
         eff.sideEffect(effect);
         actionHandler(actionObj);
-        listener();
         chai.assert.strictEqual(mutated, 1);
         done()
       });
 
-      it('must pass action to next if no meta', done => {
+      it('must pass action to next', done => {
         const actionObj = {};
-
-        const actionHandler = nextHandler(action => {
-          chai.assert.strictEqual(action, actionObj);
-          done();
-        });
-
-        actionHandler(actionObj);
-      });
-
-      it('must pass action to next if no meta effects', done => {
-        const actionObj = {meta: {}};
 
         const actionHandler = nextHandler(action => {
           chai.assert.strictEqual(action, actionObj);

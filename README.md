@@ -89,7 +89,7 @@ and it wraps all side effects in setTimeout.
 
 ## dev tools replay
 
-Didn't test this, but side effects should not get replayed.
+Should be easy enough to avoid replaying side effects if that is desired.
 
 
 ## License
