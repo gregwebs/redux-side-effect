@@ -1,5 +1,7 @@
 export function sideEffect(state: any, ...effects) {
-  if (!state.meta) { state.meta = { sideEffects: effects } }
+  if (!state) { return state }
+  if (!state.meta) { state.meta = {} }
+  state.meta.sideEffects = effects
   return state
 }
 
