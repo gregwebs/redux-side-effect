@@ -1,27 +1,29 @@
-export function sideEffect(state: any, ...effects) {
-  if (!state) { return state }
-  if (!state.meta) { state.meta = {} }
-  state.meta.sideEffects = effects
-  return state
-}
-
-export function sideEffectTimeout(state: any, timeout: number, ...effects) {
-  if (!state.meta) {
-    state.meta =
-      { sideEffects: effects.map(eff => (dispatch, getState) => {
-          setTimeout(eff(dispatch, getState), timeout) })
+export function mkSideEffect() {
+  var sideEffects = []
+  function sideEffectMiddleware({ dispatch, getState, subscribe }) {
+    subscribe(() => {
+      while (sideEffects.length > 0){
+        sideEffects.shift()(dispatch, getState)
       }
-  }
-  return state
-}
+    })
 
-export function sideEffectMiddleware({ dispatch, getState }) {
-  return next => action => {
-    var sideEffects = action && action.meta && action.meta.sideEffects
-    var result = next(action);
-    if (sideEffects) {
-      sideEffects.forEach((effect) => { effect(dispatch, getState) })
-    }
-    return result
+    return next => action => next(action)
   }
+
+  function sideEffect(...effects) {
+    for (var i in effects){
+      sideEffects.push(effects[i])
+    }
+  }
+
+  function sideEffectTimeout(timeout: number, ...effects) {
+    return sideEffect(effects.map(eff => (dispatch, getState) => {
+      setTimeout(eff(dispatch, getState), timeout)
+    }))
+  }
+
+  return { sideEffect: sideEffect
+         , sideEffectTimeout: sideEffectTimeout
+         , sideEffectMiddleware: sideEffectMiddleware
+         }
 }

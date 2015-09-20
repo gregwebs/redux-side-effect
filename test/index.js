@@ -1,10 +1,20 @@
 import chai from 'chai';
-import {sideEffect, sideEffectMiddleware} from '../src/index';
+import {mkSideEffect} from '../src/index';
 
 describe('side effect middleware', () => {
   const doDispatch = () => {};
-  const doGetState = () => {};
-  const nextHandler = sideEffectMiddleware({dispatch: doDispatch, getState: doGetState});
+  var mutated = 0
+  const effect = function(){ mutated++ }
+  const doGetState = () => {}
+  var listener = null
+  var eff = mkSideEffect()
+  const nextHandler = eff.sideEffectMiddleware(
+      { dispatch: doDispatch
+      , getState: doGetState
+      , subscribe: function(f){
+          listener = f;
+        }
+      });
 
   it('must return a function to handle next', () => {
     chai.assert.isFunction(nextHandler);
@@ -21,17 +31,16 @@ describe('side effect middleware', () => {
 
     describe('handle action', () => {
       it('must run the given effects with dispatch and getState', done => {
-        var mutated = 0
-        const effect = function(){ mutated++ }
-        const actionObj = { meta: { sideEffects: [effect] } };
-
+        const actionObj = {}
         const actionHandler = nextHandler(action => {
           chai.assert.strictEqual(action, actionObj);
-          done()
         });
 
+        eff.sideEffect(effect);
         actionHandler(actionObj);
+        listener();
         chai.assert.strictEqual(mutated, 1);
+        done()
       });
 
       it('must pass action to next if no meta', done => {

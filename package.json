@@ -1,6 +1,6 @@
 {
   "name": "redux-side-effect",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "Side effect middleware for Redux.",
   "main": "lib/index.js",
   "scripts": {
