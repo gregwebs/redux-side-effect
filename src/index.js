@@ -1,13 +1,13 @@
 export function mkSideEffect() {
   var sideEffects = []
-  function sideEffectMiddleware({ dispatch, getState, subscribe }) {
-    subscribe(() => {
+  function sideEffectMiddleware({ dispatch, getState }) {
+    return next => action => {
+      var result = next(action)
       while (sideEffects.length > 0){
         sideEffects.shift()(dispatch, getState)
       }
-    })
-
-    return next => action => next(action)
+      return result
+    }
   }
 
   function sideEffect(...effects) {

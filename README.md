@@ -12,6 +12,7 @@ npm install --save redux-side-effect
 ## Usage
 
 ```js
+import { mkSideEffect } from 'redux-side-effect'
 const {sideEffect, sideEffectMiddleWare} = mkSideEffect()
 applyMiddleware(sideEffectMiddleWare)(createStore)(reduce)
 function reduce(state, action){
@@ -59,14 +60,14 @@ The returned `sideEffect` registers code that will be executed once there is a s
 ``` js
 export function mkSideEffect() {
   var sideEffects = []
-  function sideEffectMiddleware({ dispatch, getState, subscribe }) {
-    subscribe(() => {
+  function sideEffectMiddleware({ dispatch, getState }) {
+    return next => action => {
+      var result = next(action)
       while (sideEffects.length > 0){
         sideEffects.shift()(dispatch, getState)
       }
-    })
-
-    return next => action => next(action)
+      return result
+    }
   }
 
   function sideEffect(...effects) {
