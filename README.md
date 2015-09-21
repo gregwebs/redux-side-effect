@@ -18,12 +18,13 @@ applyMiddleware(sideEffectMiddleWare)(createStore)(reduce)
 function reduce(state, action){
   switch (action.type){
     case "newState":
-      // could jsut use setTimeout for this
+      // could jsut use setTimeout for this.
+      // Except in the future this middleware may play nicely with redux dev tools
       sideEffect(function analytics(){ _gaq.push(['_trackEvent', 'Event', 'Detail']) })
       return action.newState
 
     case "ApiCall":
-      // The point of sideEffect is that it allows access to dispatch (and getState)
+      // sideEffect allows access to dispatch (and getState)
       sideEffect(function(dispatch){
         doApiCall().then(function(){ dispatch({type: "Done"}) })
       })
