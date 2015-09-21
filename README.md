@@ -44,10 +44,10 @@ Redux already adds a layer of indirection. When compared to Flux, it is simple, 
 
 ### redux-thunk
 
-The existing redux-thunk middleware does not allow for returning both state and effects at the same time, leading users to create artificial events. So the `"ApiCall"` from the example code would need to add a new action that gets dispatched in the thunk.
+The existing redux-thunk middleware does not allow for returning both state and effects at the same time, leading users to create artificial events. So the `"ApiCall"` from the example code would need to add a new action that gets dispatched in the thunk, or the code needs to be restructured so that the original dispatching of the event is from a thunk that also performs the side effect (which may or may not be natural).
 
 There is a more fundamental problem to redux-thunk: it changes the type of a reducer and the types accepted by middlewares in the store. This means middlewares now either need to be thunk-aware or properly placed in the stack.
-The popular concept of middleware comes from web development where the type of a middleware is always `Request -> Response`.
+The popular concept of middleware comes from web development where the type of a middleware is always `Request -> Response`. If the thunk concept were changed from just a middleware to a first-class concept, then this problem could perhaps be avoided.
 
 
 ### redux-effect-reducers
