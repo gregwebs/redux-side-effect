@@ -11,6 +11,11 @@ npm install --save redux-side-effect
 
 ## Usage
 
+There are multiple APIs available to suit your use case.
+Underneath they all do the same thing. Let us know what works best for you.
+
+### mkSideEffect
+
 ```js
 import { mkSideEffect } from 'redux-side-effect'
 const {sideEffect, sideEffectMiddleWare} = mkSideEffect()
@@ -34,6 +39,30 @@ function reduce(state, action){
   }
 }
 ```
+
+### actionSideEffectMiddleware
+
+``` js
+applyMiddleware(actionSideEffectMiddleWare)(createStore)(reduce)
+function reduce(state, action){
+  switch (action.type){
+    case "ApiCall":
+      // sideEffect is placed directly on the action
+      action.sideEffect(function(dispatch){
+        doApiCall().then(function(){ dispatch({type: "Done"}) })
+      })
+      return Object.assign({}, state, {saving: true})
+
+    case "Done":
+  }
+}
+```
+
+### timeouts
+
+The above alternatives by default do not call setTimeout for you.
+A function `sideEffectTimeout` is available which takes a time as a first parameter
+and it wraps all side effects in setTimeout.
 
 
 ## Motivation
@@ -72,40 +101,25 @@ The point of purity is not that side effects, mutations, and actions are never p
 
 ## Code
 
-The main reason why this library exists and that you don't just call setTimeout around your async calls is that the middleare has access to the store functions.
-However, with access to the store variable, you can achieve the same thing without middleware.
-
-This code itself is unfortunately based on side effects, so this is encapsulated by the exported function `mkSideEffect`.
-`sideEffect`, which is returned by `mkSideEffect`, registers code that will be executed once there is a state change
+You can implement this functionality in a few lines of code for yourself if you have access to your store.
 
 ``` js
-export function mkSideEffect() {
-  var sideEffects = []
-  function sideEffectMiddleware({ dispatch, getState }) {
-    return next => action => {
-      var result = next(action)
-      while (sideEffects.length > 0){
-        sideEffects.shift()(dispatch, getState)
-      }
-      return result
-    }
+const sideEffects = []
+// sideEffect needs to be in scope of your reducer function
+function sideEffect(...effects) {
+  for (var i in effects){
+    sideEffects.push(effects[i])
   }
-
-  function sideEffect(...effects) {
-    for (var i in effects){
-      sideEffects.push(effects[i])
-    }
-  }
-
-  return { sideEffect: sideEffect
-         , sideEffectMiddleware: sideEffectMiddleware
-         }
 }
+store.subscribe(() => {
+  sideEffects.forEach(eff => eff(store.dispatch, store.getState))
+})
 ```
 
-Note that by default setTimeout is not called for you.
-A function `sideEffectTimeout` is available which takes a time as a first parameter
-and it wraps all side effects in setTimeout.
+This library exists for a few reasons
+1) show a simple technique for dealing with side effects
+2) to have integration that with redux dev tools.
+3) You can use it in places that you don't have access to your store variable
 
 
 ## dev tools replay
