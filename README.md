@@ -23,7 +23,7 @@ applyMiddleware(sideEffectMiddleWare)(createStore)(reduce)
 function reduce(state, action){
   switch (action.type){
     case "newState":
-      // could jsut use setTimeout for this.
+      // could just use setTimeout for this.
       // Except in the future this middleware may play nicely with redux dev tools
       sideEffect(function analytics(){ _gaq.push(['_trackEvent', 'Event', 'Detail']) })
       return action.newState
