@@ -18,8 +18,8 @@ Underneath they all do the same thing. Let us know what works best for you.
 
 ```js
 import { mkSideEffect } from 'redux-side-effect'
-const {sideEffect, sideEffectMiddleWare} = mkSideEffect()
-applyMiddleware(sideEffectMiddleWare)(createStore)(reduce)
+const {sideEffect, sideEffectMiddleware} = mkSideEffect()
+applyMiddleware(sideEffectMiddleware)(createStore)(reduce)
 function reduce(state, action){
   switch (action.type){
     case "newState":
@@ -43,7 +43,7 @@ function reduce(state, action){
 ### actionSideEffectMiddleware
 
 ``` js
-applyMiddleware(actionSideEffectMiddleWare)(createStore)(reduce)
+applyMiddleware(actionSideEffectMiddleware)(createStore)(reduce)
 function reduce(state, action){
   switch (action.type){
     case "ApiCall":
