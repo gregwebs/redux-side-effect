@@ -7,7 +7,7 @@ function mkSideEffectCollector(sideEffects){
 }
 
 function mkSideEffectTimeout(sideEffect){
-  return function sideEffectTimeout(timeout: number, ...effects) {
+  return function sideEffectTimeout(timeout, ...effects) {
     return sideEffect(effects.map(eff => (dispatch, getState) => {
       setTimeout(eff(dispatch, getState), timeout)
     }))
