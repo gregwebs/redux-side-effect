@@ -45,7 +45,7 @@ export function mkSideEffect() {
 export function actionSideEffectMiddleware({ dispatch, getState }) {
   const sideEffects = [];
   const sideEffect = mkSideEffectCollector(sideEffects)
-  const sideEffectTimeout = mkSideEffectTimeout(action.sideEffect)
+  const sideEffectTimeout = mkSideEffectTimeout(sideEffect)
   const drainSideEffects = mkDrainSideEffects(sideEffects, dispatch, getState)
   return next => action => {
     action.sideEffect = sideEffect
