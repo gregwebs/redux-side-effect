@@ -7,7 +7,9 @@ Lets you specify side effects in your reducing function that dispatch new action
 ```js
 npm install --save redux-side-effect
 ```
+## Similar library
 
+[redux-side-effects](https://github.com/salsita/redux-side-effects) (plural of this library).
 
 ## Usage
 
